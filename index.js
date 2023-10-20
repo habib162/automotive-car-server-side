@@ -27,6 +27,7 @@ async function run() {
     const productCollection = client.db("automotiveDB").collection("products");
     const userCollection = client.db("automotiveDB").collection("users");
     const brandCollection = client.db("automotiveDB").collection("brands");
+    const cartCollection = client.db("automotiveDB").collection("carts");
     app.get('/product', async (req, res) => {
       const cars = productCollection.find();
       const result = await cars.toArray();
@@ -84,6 +85,26 @@ async function run() {
     app.post('/user', async (req, res) => {
       const newUser = req.body;
       const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    })
+
+    // my cart
+    app.post('/my-cart', async (req, res) => {
+      const newCart = req.body;
+      console.log(newCart);
+      const result = await cartCollection.insertOne(newCart);
+      res.send(result);
+    })
+    app.get('/my-cart', async (req, res) => {
+      const carts = cartCollection.find();
+      const result = await carts.toArray();
+      res.send(result);
+    })
+    app.delete('/my-cart/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+      const result = await cartCollection.deleteOne(query);
       res.send(result);
     })
 
