@@ -26,79 +26,89 @@ async function run() {
 
     const productCollection = client.db("automotiveDB").collection("products");
     const brandCollection = client.db("automotiveDB").collection("brands");
-    app.get('/product', async(req,res) =>{
-        const cars = productCollection.find();
-        const result = await cars.toArray();
-        res.send(result);
+    app.get('/product', async (req, res) => {
+      const cars = productCollection.find();
+      const result = await cars.toArray();
+      res.send(result);
     })
-   
-    app.post('/product',async(req,res)=>{
-        const newCars = req.body;
-        console.log(newCars);
-        const result = await productCollection.insertOne(newCars);
-        res.send(result);
+
+    app.post('/product', async (req, res) => {
+      const newCars = req.body;
+      console.log(newCars);
+      const result = await productCollection.insertOne(newCars);
+      res.send(result);
     })
 
     // product update
-    app.get('/product/:id', async(req,res) =>{
+    app.get('/product/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await productCollection.findOne(query);
       res.send(result);
-  })
+    })
 
-   app.put('/product/:id', async(req,res) =>{
+    app.put('/product/:id', async (req, res) => {
       const id = req.params.id;
-      const filter = {_id: new ObjectId(id)}
-      const updateProduct = {
-        $set : {
-          productName : updateProduct.productName,
-          brand_name : updateProduct.brand_name,
-          type : updateProduct.type,
-          price : updateProduct.price,
-          image : updateProduct.image,
-          description : updateProduct.description,
-          rating : updateProduct.rating
+      const filter = { _id: new ObjectId(id) }
+      const updateProduct = req.body;
+      const product = {
+        $set: {
+          productName: updateProduct.productName,
+          brand_name: updateProduct.brand_name,
+          type: updateProduct.type,
+          price: updateProduct.price,
+          image: updateProduct.image,
+          description: updateProduct.description,
+          rating: updateProduct.rating
         }
       }
-  })
-
-
-    app.get('/brand', async(req,res) =>{
-        const brands = brandCollection.find();
-        const result = await brands.toArray();
-        res.send(result);
+      const result = await productCollection.updateOne(filter, product);
+      res.send(result);
     })
-    app.post('/brand',async(req,res)=>{
-        const newBrand = req.body;
-        console.log(newBrand);
-        const result = await brandCollection.insertOne(newBrand);
-        res.send(result);
+    // product delete
+    app.delete('/product/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+      const result = await productCollection.deleteOne(query);
+      res.send(result);
     })
-    app.delete('/brand/:id', async(req,res)=>{
-        const id = req.params.id;
-        console.log(id);
-        const query = {_id: new ObjectId(id)}
-        
-        const result = await brandCollection.deleteOne(query);
-        console.log(result);
-        res.send(result);
-      })
-    app.put('/brand/:id', async(req,res)=>{
-        const id = req.params.id;
-        console.log(id);
-        const query = {_id: new ObjectId(id)}
-        const updatedBrand = req.body;
-        const brand = {
-            $set: {
-              brandName :updatedBrand.brandName,
-                 brandImage :updatedBrand.brandImage,
-            }
+
+    app.get('/brand', async (req, res) => {
+      const brands = brandCollection.find();
+      const result = await brands.toArray();
+      res.send(result);
+    })
+    app.post('/brand', async (req, res) => {
+      const newBrand = req.body;
+      console.log(newBrand);
+      const result = await brandCollection.insertOne(newBrand);
+      res.send(result);
+    })
+    app.delete('/brand/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+
+      const result = await brandCollection.deleteOne(query);
+      console.log(result);
+      res.send(result);
+    })
+    app.put('/brand/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+      const updatedBrand = req.body;
+      const brand = {
+        $set: {
+          brandName: updatedBrand.brandName,
+          brandImage: updatedBrand.brandImage,
         }
-        const result = await brandCollection.updateOne(query,brand);
-        res.send(result);
-      })
-      
+      }
+      const result = await brandCollection.updateOne(query, brand);
+      res.send(result);
+    })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -111,10 +121,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req,res) => {
-    res.send('coffe making.....')
+app.get('/', (req, res) => {
+  res.send('coffe making.....')
 })
 
-app.listen(port,()=>{
-    console.log(`car server is on port ${port}`);
+app.listen(port, () => {
+  console.log(`car server is on port ${port}`);
 })
