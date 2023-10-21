@@ -28,6 +28,8 @@ async function run() {
     const userCollection = client.db("automotiveDB").collection("users");
     const brandCollection = client.db("automotiveDB").collection("brands");
     const cartCollection = client.db("automotiveDB").collection("carts");
+    const messageCollection = client.db("automotiveDB").collection("messages");
+
     app.get('/product', async (req, res) => {
       const cars = productCollection.find();
       const result = await cars.toArray();
@@ -139,7 +141,14 @@ async function run() {
           brandImage: updatedBrand.brandImage,
         }
       }
+
       const result = await brandCollection.updateOne(query, brand);
+      res.send(result);
+    })
+// contact us
+    app.post('/contact', async (req, res) => {
+      const newMessage = req.body;
+      const result = await messageCollection.insertOne(newMessage);
       res.send(result);
     })
 
@@ -156,7 +165,7 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('coffe making.....')
+  res.send('Automotive server is on live.....')
 })
 
 app.listen(port, () => {
